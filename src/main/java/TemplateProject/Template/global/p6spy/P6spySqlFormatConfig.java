@@ -6,7 +6,7 @@ import org.hibernate.engine.jdbc.internal.FormatStyle;
 
 import java.util.Locale;
 
-public class p6spySqlFormatConfig implements MessageFormattingStrategy {
+public class P6spySqlFormatConfig implements MessageFormattingStrategy {
 
     @Override
     public String formatMessage (int connectionId, String now, long elapsed, String category, String prepared, String sql, String url) {
