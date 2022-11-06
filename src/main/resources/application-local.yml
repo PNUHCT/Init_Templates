@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: tlxltlf1!A
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+  sql:
+    init:
+      data-locations: classpath:static/db/data.sql
+      mode: always
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+file:
+  img: /Users/hipo/Desktop/Img/
+
+iam:
+  access-key: local
+  secret-key: local
+  region: local
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+mod: local
