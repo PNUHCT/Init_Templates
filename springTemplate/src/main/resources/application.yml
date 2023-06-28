@@ -8,7 +8,7 @@ server:
 
 spring:
   profiles:
-    active: real   # ?? ???? ??? ?? ??
+    active: local
   jpa:
     hibernate:
       ddl-auto: create
