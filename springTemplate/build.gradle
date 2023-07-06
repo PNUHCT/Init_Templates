@@ -35,6 +35,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'  // for redis (dongjin)
 
 	implementation group: 'com.google.code.gson', name: 'gson' // for ErrorResponder 등
+
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0' // p6spy for  logging tracktion
 }
 
 tasks.named('test') {
