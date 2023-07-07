@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import neoguri.springTemplate.domain.member.entity.Member;
 import neoguri.springTemplate.exception.dto.BusinessLogicException;
 import neoguri.springTemplate.exception.exceptionCode.ExceptionCode;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
@@ -13,15 +14,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
 
-//    private final PasswordEncoder passwordEncoder; // Spring Security에서 제공하는 모듈
     private final MemberRepository memberRepository;
 
     @Transactional
     public Member createMember(Member member) {
         verifyNotExistEmail(member.getEmail());
         member.defaultProfile();
-//        String encryptedPassword = passwordEncoder.encode(member.getPassword());
-//        member.setPassword(encryptedPassword);
 
         return memberRepository.save(member);
     }
@@ -36,7 +34,6 @@ public class MemberService {
     @Transactional
     public void modifyMember(Member member, Long memberId) {
         Member existMember = new Member().verifyMember(memberRepository.findById(memberId));
-//        Optional.ofNullable(member.getPassword()).ifPresent(pw -> existMember.modifyPassword(passwordEncoder.encode(pw))); // 해제시, 수정중 비밀번호를 필수항목으로 지정 가능
 
         String encodedPassword = null;
         Optional.ofNullable(encodedPassword).ifPresent(existMember::modifyPassword);
@@ -47,7 +44,47 @@ public class MemberService {
         memberRepository.save(existMember);
     }
 
+    /**
+     * Member 완전 삭제시 사용
+     */
+    @Transactional
+    public void removeMember(Long memberId) {
+        Member verifyMember = new Member().verifyMember(memberRepository.findById(memberId));
+        memberRepository.delete(verifyMember);
+    }
 
+
+    /**
+     * Member Entity클래스 내 구현한 회원탈퇴 메소드(withdrawMember 호출)
+     */
+    @Transactional
+    public void withdrawMember(Long memberId) {
+        Member verifyMember = new Member().verifyMember(memberRepository.findById(memberId));
+        verifyMember.withdrawMember();
+        memberRepository.save(verifyMember);
+    }
+
+    /**
+     * 현재는 Controller에서 String 반환중
+     *
+     * @param memberId : 추후 시큐리티 구현 후 적용될 예정
+     * @return : 1명의 member 정보를 반환 => 맞춰서 ResponseDto 제작 예정
+     */
+    public Member findMember(Long memberId) {
+        Member member = new Member().verifyMember(memberRepository.findById(memberId));
+        return member;
+    }
+
+
+    /**
+     * 전체 회원 조회용 (Default는 10계정)
+     *
+     * @param pageable : page, size, sort 등 사용 가능
+     * @return Page 구조
+     */
+    public Page<Member> findMembers(Pageable pageable) {
+        return memberRepository.findAll(pageable);
+    }
 
 
     /**
