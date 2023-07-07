@@ -30,6 +30,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'  // for security (dongjin)
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // for security (dongjin)
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // for security (dongjin)
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // for security (dongjin)
+
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // for oauth2 (dongjin)
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // for oauth2 (dongjin)
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'  // for redis (dongjin)
