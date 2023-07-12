@@ -46,3 +46,11 @@ decorator:
   datasource:
     p6spy:
       enable-logging: true
+
+# JWT Spring Security 사용을 위한 JWT 설정
+jwt:
+  key:
+    secret: ${JWT_SECRET_KEY}
+    access-token-expiration-minutes: 30
+    refresh-token-expiration-minutes: 1440
+  refresh-token-prefix: RTKey
