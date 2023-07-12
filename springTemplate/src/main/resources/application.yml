@@ -36,6 +36,10 @@ spring:
       pageable:
         default-page-size: 20
         one-indexed-parameters: true
+  # Redis settings
+  redis:
+    host: localhost  # 127.0.0.1 과 같다
+    port: 6379
 
 # p6soy 설정 : 나만의 로그 템플릿으로 터미널을 통한 동작 로그를 보기위한 설정
 decorator:
