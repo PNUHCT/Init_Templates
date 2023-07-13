@@ -36,9 +36,21 @@ spring:
       pageable:
         default-page-size: 20
         one-indexed-parameters: true
+  # Redis settings
+  redis:
+    host: localhost  # 127.0.0.1 과 같다
+    port: 6379
 
 # p6soy 설정 : 나만의 로그 템플릿으로 터미널을 통한 동작 로그를 보기위한 설정
 decorator:
   datasource:
     p6spy:
       enable-logging: true
+
+# JWT Spring Security 사용을 위한 JWT 설정
+jwt:
+  key:
+    secret: ${JWT_SECRET_KEY}
+    access-token-expiration-minutes: 30
+    refresh-token-expiration-minutes: 1440
+  refresh-token-prefix: RTKey
