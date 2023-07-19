@@ -1,0 +1,64 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/uyouboodan1
+    username: root
+    password: tlxltlf1!A
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+  sql:
+    init:
+      data-locations: classpath:static/db/data.sql
+      mode: always
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+  redis:
+    host: localhost  # 127.0.0.1 과 같다
+    port: 6379
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+file:
+  img: Img/                       # 각 이미지 파일 저장 경로
+
+iam:
+  access-key: local
+  secret-key: local
+  region: local
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+
+mod: local
+jwt:
+  key:
+    secret: ${JWT_SECRET_KEY}
+    access-token-expiration-minutes: 30
+    refresh-token-expiration-minutes: 1440
+  refresh-token-prefix: RTKey
+oauth:
+  kakao:
+    appKey:
+      restApiKey: 30236047fb05c4e54d73fce77317bb51
+    clientId: 857920
+    initialKey: 1q2w3e4r1q2w3e4r  #${KAKAO_INIT_KEY}
+  google:
+    clientId: 950144848706-cn38ajrvu1ef8ivojk8ald9534rnjuq4.apps.googleusercontent.com
+    clientSecret: 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
+    scope: profile,email,openid
+    redirectUrl: http://localhost:3000/auth/googleredirect # 프론트용 redirectUrl. Google Cloud에 등록해두었다
+  #    redirectUrl: http://localhost:8080/google/callback # 백엔드 로컬테스트용 redirectUrl. Google Cloud에 등록해두었다.
+  naver:
+    clientId: GegU4t3foT9msPj71xjD
+    clientSecret: xypJHyjCLC

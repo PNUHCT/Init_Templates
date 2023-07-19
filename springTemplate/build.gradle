@@ -30,9 +30,19 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'  // for security (dongjin)
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // for security (dongjin)
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // for security (dongjin)
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // for security (dongjin)
+
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // for oauth2 (dongjin)
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // for oauth2 (dongjin)
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'  // for redis (dongjin)
+
+	implementation group: 'com.google.code.gson', name: 'gson' // for ErrorResponder 등
+
+	runtimeOnly 'com.h2database:h2' // for h2 in-memory database
+
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0' // p6spy for  logging tracktion
 }
 
 tasks.named('test') {

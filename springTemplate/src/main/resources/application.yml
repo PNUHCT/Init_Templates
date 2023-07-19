@@ -1,3 +1,4 @@
+### 기본 서버 설정
 server:
   port: 8080
   servlet:
@@ -6,21 +7,50 @@ server:
       enabled: true
       force: true
 
+### Spring Settings
 spring:
+  ## H2 사용시
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  datasource:
+    url: jdbc:h2:mem:test
+  ## 프로젝트 시작시 사용할 application.yml 파일 선택
   profiles:
-    active: real   # ?? ???? ??? ?? ??
+    active: local  # 없으면 default 자동실행됨. application-server.yml, application-local.yml 등 추가로 만들어서 설정이 가능
+  ## JPA ORM 설정
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create  # 매 프로젝트 시작마다 스키마를 새로 생성
       profiles:
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: false
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl  # 스키마 내 이름생성 전략 설정
+    show-sql: false  # true시, 영속성 컨텍스트에 있는 SQL이 DB에 반영되는 순간마다 해당 SQL을 터미널 로그에 보여줌 (필자는 p6spy로 커스터마이징 했기에 false처리함)
     properties:
       hibernate:
         default_batch_fetch_size: 100
+  ## Pageable 파라미터 default 설정
   data:
     web:
       pageable:
         default-page-size: 20
         one-indexed-parameters: true
+  # Redis settings
+  redis:
+    host: localhost  # 127.0.0.1 과 같다
+    port: 6379
+
+# p6soy 설정 : 나만의 로그 템플릿으로 터미널을 통한 동작 로그를 보기위한 설정
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+# JWT Spring Security 사용을 위한 JWT 설정
+jwt:
+  key:
+    secret: ${JWT_SECRET_KEY}
+    access-token-expiration-minutes: 30
+    refresh-token-expiration-minutes: 1440
+  refresh-token-prefix: RTKey
