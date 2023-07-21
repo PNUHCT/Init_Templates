@@ -54,3 +54,19 @@ jwt:
     access-token-expiration-minutes: 30
     refresh-token-expiration-minutes: 1440
   refresh-token-prefix: RTKey
+
+oauth:
+  kakao:
+    appKey:
+      restApiKey: ${KAKAO_RESTAPI_KEY}
+    clientId: ${KAKAO_CLIENT_ID}
+    initialKey: ${KAKAO_INIT_KEY}
+  google:
+    clientId: ${GOOGLE_CLIENT_ID}
+    clientSecret: @{GOOGLE_CLIENT_SECRET}
+    scope: profile,email,openid
+    redirectUrl: http://localhost:3000/auth/googleredirect # 프론트용 redirectUrl. Google Cloud에 등록해두었다
+  #    redirectUrl: http://localhost:8080/google/callback # 백엔드 로컬테스트용 redirectUrl. Google Cloud에 등록해두었다.
+  naver:
+    clientId: ${NAVER_CLIENT_ID}
+    clientSecret: ${NAVER_CLIENT_SECRET}
