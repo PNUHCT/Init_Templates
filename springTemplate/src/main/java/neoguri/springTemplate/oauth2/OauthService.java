@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 @Service
@@ -29,7 +30,7 @@ public class OauthService {
         StringBuffer url = new StringBuffer();
 
         // 카카오 API 명세에 맞춰서 작성
-        String redirectURI = URLEncoder.encode("http://www.localhost:8080/naver/callback", "UTF-8"); // redirectURI 설정 부분
+        String redirectURI = URLEncoder.encode("http://www.localhost:8080/naver/callback", StandardCharsets.UTF_8); // redirectURI 설정 부분
         SecureRandom random = new SecureRandom();
         String state = new BigInteger(130, random).toString();
 
