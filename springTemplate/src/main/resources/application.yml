@@ -63,7 +63,7 @@ oauth:
     initialKey: ${KAKAO_INIT_KEY}
   google:
     clientId: ${GOOGLE_CLIENT_ID}
-    clientSecret: @{GOOGLE_CLIENT_SECRET}
+    clientSecret: ${GOOGLE_CLIENT_SECRET}
     scope: profile,email,openid
     redirectUrl: http://localhost:3000/auth/googleredirect # 프론트용 redirectUrl. Google Cloud에 등록해두었다
   #    redirectUrl: http://localhost:8080/google/callback # 백엔드 로컬테스트용 redirectUrl. Google Cloud에 등록해두었다.
