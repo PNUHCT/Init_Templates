@@ -18,7 +18,7 @@ spring:
     url: jdbc:h2:mem:test
   ## 프로젝트 시작시 사용할 application.yml 파일 선택
   profiles:
-    active: local  # 없으면 default 자동실행됨. application-server.yml, application-local.yml 등 추가로 만들어서 설정이 가능
+    active:  # 없으면 default 자동실행됨. application-server.yml, application-local.yml 등 추가로 만들어서 설정이 가능
   ## JPA ORM 설정
   jpa:
     hibernate:

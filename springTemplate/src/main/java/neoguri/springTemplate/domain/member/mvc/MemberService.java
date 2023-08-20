@@ -37,7 +37,14 @@ public class MemberService {
     @Transactional
     public Member createMember(Member member) {
         verifyNotExistEmail(member.getEmail());
+
         member.defaultProfile();
+
+        String encryptedPassword = passwordEncoder.encode(member.getPassword());
+        member.setPassword(encryptedPassword);
+
+        List<String> roles = customAuthorityUtils.createRoles(member.getEmail());
+        member.setRoles(roles);
 
         return memberRepository.save(member);
     }
@@ -54,6 +61,7 @@ public class MemberService {
         Member existMember = new Member().verifyMember(memberRepository.findById(memberId));
 
         String encodedPassword = null;
+        if (member.getPassword() != null) encodedPassword = passwordEncoder.encode(member.getPassword());
         Optional.ofNullable(encodedPassword).ifPresent(existMember::modifyPassword);
         Optional.ofNullable(member.getNickname()).ifPresent(existMember::modifyNickname);
         Optional.ofNullable(member.getProfile()).ifPresent(existMember::modifyProfile);  // 현재 profile의 경우 단순 URI상태. 추후 파일로 변경 예정
@@ -105,6 +113,9 @@ public class MemberService {
     }
 
 
+
+    // ------------------------- Check Duplicated Information Methods -------------------------
+
     /**
      * 이메일 중복 확인 메소드. 이메일 존재시 예외 발생
      */
@@ -113,10 +124,32 @@ public class MemberService {
         if (optionalEmail.isPresent()) throw new BusinessLogicException(ExceptionCode.EMAIL_EXIST);
     }
 
+    /**
+     * password 일치 여부 조회 메소드
+     * @param memberId
+     */
+    @Transactional
+    public void verifyPassword(String password, Long memberId) {
+        Member member = new Member().verifyMember(memberRepository.findById(memberId));
+        if(passwordEncoder.matches(password, member.getPassword())) {
+            String updatedPassword = passwordEncoder.encode(password);
+            member.modifyPassword(updatedPassword);
+            memberRepository.save(member);
+        } else throw new BusinessLogicException(ExceptionCode.NOT_EXACT_PASSWORD);
+    }
 
     /**
-     * for Kakao
+     * 닉네임 중복확인 메소드. 닉네임 존재시 예외 발생
+     * @param nickname
      */
+    public void verifyNotExistNickname(String nickname) {
+        Optional<Member> optionalEmail = memberRepository.findByNickname(nickname);
+        if (optionalEmail.isPresent()) throw new BusinessLogicException(ExceptionCode.NICKNAME_EXIST);
+    }
+
+
+
+    // ------------------------- OAuth2.0 Methods -------------------------
 
     /**
      * 카카오 외부 로그인 전용 멤버 생성 및 검증 메소드

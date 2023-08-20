@@ -7,21 +7,24 @@ import neoguri.springTemplate.domain.member.dto.MemberResDto;
 import neoguri.springTemplate.domain.member.entity.Member;
 import neoguri.springTemplate.dto.MultiResDto;
 import neoguri.springTemplate.dto.SingleResDto;
+import neoguri.springTemplate.security.util.JwtParcingUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member")
+@RequestMapping("/members")
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtParcingUtil jwtParcingUtil;
 
     /**
      * Post 요청
@@ -41,9 +44,10 @@ public class MemberController {
      * @param memberPatchReqDto : 요청 Body
      * @return void
      */
-    @PatchMapping("/edit/{memberId}")
+    @PatchMapping("/edit")
     public ResponseEntity<SingleResDto<String>> patchMember (@RequestBody MemberPatchReqDto memberPatchReqDto,
-                                                             @RequestParam Long memberId) {
+                                                             HttpServletRequest request) {
+        Long memberId = jwtParcingUtil.extractMemberIdFromJwt(request);
         memberService.modifyMember(memberPatchReqDto.toEntity(), memberId);
 
         return new ResponseEntity<>(new SingleResDto<>("Success Modify"), HttpStatus.OK);
@@ -58,9 +62,9 @@ public class MemberController {
      * 회원탈퇴(withdraw) 후 성공 메세지 반환
      * @return "data" : "성공 메세지"
      */
-    @DeleteMapping("/remove/{memberId}")
-    public ResponseEntity<SingleResDto<String>> withdrawMember (@RequestParam Long memberId) {
-        memberService.withdrawMember(memberId);
+    @DeleteMapping("/remove")
+    public ResponseEntity<SingleResDto<String>> withdrawMember (HttpServletRequest request) {
+        memberService.withdrawMember(jwtParcingUtil.extractMemberIdFromJwt(request));
 
         return new ResponseEntity<>(new SingleResDto<>("정상적으로 탈퇴되었습니다."), HttpStatus.OK);
     }
@@ -70,9 +74,9 @@ public class MemberController {
      * 회원 삭제 메소드
      * @return 삭제 성공 메세지
      */
-    @DeleteMapping("/delete/{memberId}")
-    public ResponseEntity<SingleResDto<String>> deleteMember (@RequestParam Long memberId) {
-        memberService.removeMember(memberId);
+    @DeleteMapping("/delete")
+    public ResponseEntity<SingleResDto<String>> deleteMember (HttpServletRequest request) {
+        memberService.removeMember(jwtParcingUtil.extractMemberIdFromJwt(request));
 
         return new ResponseEntity<>(new SingleResDto<>("Success Delete"), HttpStatus.OK);
     }
@@ -82,9 +86,9 @@ public class MemberController {
      * 단일 Get 요청
      * @return "data" : "단일 객체에 대한 응답정보"
      */
-    @GetMapping("/find/{memberId}")
-    public ResponseEntity<SingleResDto<MemberResDto>> getMember (@RequestParam Long memberId) {
-        Member member = memberService.findMember(memberId);
+    @GetMapping("/find")
+    public ResponseEntity<SingleResDto<MemberResDto>> getMember (HttpServletRequest request) {
+        Member member = memberService.findMember(jwtParcingUtil.extractMemberIdFromJwt(request));
         MemberResDto response = new MemberResDto(member);
 
         return new ResponseEntity<>(new SingleResDto<>(response), HttpStatus.OK);
