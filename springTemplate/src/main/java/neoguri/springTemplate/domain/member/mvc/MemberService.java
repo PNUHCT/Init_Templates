@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import neoguri.springTemplate.domain.member.entity.Member;
 import neoguri.springTemplate.exception.dto.BusinessLogicException;
 import neoguri.springTemplate.exception.exceptionCode.ExceptionCode;
+import neoguri.springTemplate.oauth2.naver.NaverProfileVo;
 import neoguri.springTemplate.security.filter.JwtVerificationFilter;
 import neoguri.springTemplate.security.util.CustomAuthorityUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -208,6 +209,50 @@ public class MemberService {
 
         // 로그아웃 후 AccessToken이 Redis에 잘 저장됬는지 확인
         System.out.println(redisTemplate.opsForValue().get(accessToken).toString());
+    }
+
+    /**
+     * 네이버 외부 로그인 전용 멤버 생성 및 검증 메소드
+     * @param naverProfile, naverAccessToken
+     * @return
+     */
+    @Transactional
+    public Member createNaverMember (NaverProfileVo naverProfile, String naverAccessToken) {
+        // 중복 가입 방지 로직 추가
+        Optional<Member> optMember;
+        if(naverProfile.getResponse().getEmail()==null) optMember = memberRepository.findByEmail(naverProfile.getResponse().getId().toString()+"@uyouboodan.com");
+        else optMember = memberRepository.findByEmail(naverProfile.getResponse().getEmail());
+
+        if(optMember.isEmpty()) {
+            Member member = Member.builder()  // 네이버의 경우 Id값이 임의의 문자열이므로, 서비스에선 자체 생성하는 방식으로 사용
+                    .nickname("Mock"+ naverProfile.getResponse().getId())
+                    .password(passwordEncoder.encode(getInitialKey())) // yml을 통해 시스템 변수 default값 설정해둠
+                    .oauthId(naverProfile.getResponse().getId())
+                    .oauthAccessToken(naverAccessToken)
+                    .memberStatus(Member.MemberStatus.MEMBER_ACTIVE)
+                    .build();
+            if (naverProfile.getResponse().getEmail()==null) member.modifyEmail(naverProfile.getResponse().getId()+"@uyouboodan.com"); // email 수집 미동의시, 자사 email로 가입됨
+            else member.modifyEmail(naverProfile.getResponse().getEmail());
+
+            member.defaultProfile();
+
+            /**
+             * JwtVerificationFilter내 setOauthSecurityContext메소드로 대체했습니다.
+             * 다만, 연결구조 및 접근권한 우려로 추후 Security FilterChain에 위임하는 코드로 변경할 예정입니다.
+             */
+            List<String> roles = customAuthorityUtils.createRoles(member.getEmail());
+            member.setRoles(roles);
+
+            jwtVerificationFilter.setOauthSecurityContext(member);
+
+            return memberRepository.save(member);
+        }
+        else {
+            // 기존 회원으로 가입되어 있을 경우, 저장된 AccessToken 을 최신화 해줌 (로그아웃을 위함)
+            Member member = optMember.get();
+            member.modifyOauthToken(naverAccessToken);
+            return memberRepository.save(member);
+        }
     }
 
 }
