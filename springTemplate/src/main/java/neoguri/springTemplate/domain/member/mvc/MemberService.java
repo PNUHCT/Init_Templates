@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import neoguri.springTemplate.domain.member.entity.Member;
 import neoguri.springTemplate.exception.dto.BusinessLogicException;
 import neoguri.springTemplate.exception.exceptionCode.ExceptionCode;
+import neoguri.springTemplate.oauth2.google.GoogleLoginDto;
 import neoguri.springTemplate.oauth2.naver.NaverProfileVo;
 import neoguri.springTemplate.security.filter.JwtVerificationFilter;
 import neoguri.springTemplate.security.util.CustomAuthorityUtils;
@@ -253,6 +254,37 @@ public class MemberService {
             member.modifyOauthToken(naverAccessToken);
             return memberRepository.save(member);
         }
+    }
+
+    @Transactional
+    public Member createGoogleMember (GoogleLoginDto googleProfile, String googleAccessToken) {
+        // 중복 가입 방지 로직 추가
+        Optional<Member> optMember;
+        if(googleProfile.getEmail()==null) optMember = memberRepository.findByEmail(googleProfile.getSub()+"@uyouboodan.com");
+        else optMember = memberRepository.findByEmail(googleProfile.getEmail());
+
+        if(optMember.isEmpty()) {
+            Member member = Member.builder()
+                    .nickname("Mock"+ googleProfile.getName()+googleProfile.getFamilyName())
+                    .password(passwordEncoder.encode(getInitialKey()))
+                    .oauthAccessToken(googleAccessToken)
+                    .memberStatus(Member.MemberStatus.MEMBER_ACTIVE)
+                    .build();
+
+            if(googleProfile.getEmail()==null) member.modifyEmail(googleProfile.getSub()+"@uyouboodan.com");
+            else member.modifyEmail(googleProfile.getEmail());
+
+            if(googleProfile.getPicture()!=null) member.modifyProfile(googleProfile.getPicture());
+            else member.defaultProfile();
+
+            List<String> roles = customAuthorityUtils.createRoles(member.getEmail());
+            member.setRoles(roles);
+
+            jwtVerificationFilter.setOauthSecurityContext(member);
+
+            return memberRepository.save(member);
+        }
+        else return optMember.get();
     }
 
 }
