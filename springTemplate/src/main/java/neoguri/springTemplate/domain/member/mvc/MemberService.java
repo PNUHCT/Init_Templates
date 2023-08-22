@@ -232,7 +232,7 @@ public class MemberService {
                     .oauthAccessToken(naverAccessToken)
                     .memberStatus(Member.MemberStatus.MEMBER_ACTIVE)
                     .build();
-            if (naverProfile.getResponse().getEmail()==null) member.modifyEmail(naverProfile.getResponse().getId()+"@uyouboodan.com"); // email 수집 미동의시, 자사 email로 가입됨
+            if (naverProfile.getResponse().getEmail()==null) member.modifyEmail(naverProfile.getResponse().getId()+"@neoguri.com"); // email 수집 미동의시, 자사 email로 가입됨
             else member.modifyEmail(naverProfile.getResponse().getEmail());
 
             member.defaultProfile();
@@ -260,7 +260,7 @@ public class MemberService {
     public Member createGoogleMember (GoogleLoginDto googleProfile, String googleAccessToken) {
         // 중복 가입 방지 로직 추가
         Optional<Member> optMember;
-        if(googleProfile.getEmail()==null) optMember = memberRepository.findByEmail(googleProfile.getSub()+"@uyouboodan.com");
+        if(googleProfile.getEmail()==null) optMember = memberRepository.findByEmail(googleProfile.getSub()+"@neoguri.com");
         else optMember = memberRepository.findByEmail(googleProfile.getEmail());
 
         if(optMember.isEmpty()) {
@@ -271,7 +271,7 @@ public class MemberService {
                     .memberStatus(Member.MemberStatus.MEMBER_ACTIVE)
                     .build();
 
-            if(googleProfile.getEmail()==null) member.modifyEmail(googleProfile.getSub()+"@uyouboodan.com");
+            if(googleProfile.getEmail()==null) member.modifyEmail(googleProfile.getSub()+"@neoguri.com");
             else member.modifyEmail(googleProfile.getEmail());
 
             if(googleProfile.getPicture()!=null) member.modifyProfile(googleProfile.getPicture());
