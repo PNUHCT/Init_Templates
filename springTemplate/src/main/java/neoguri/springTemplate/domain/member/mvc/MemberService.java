@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import neoguri.springTemplate.oauth2.kakao.KakaoProfileVo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -48,8 +49,9 @@ public class MemberService {
         List<String> roles = customAuthorityUtils.createRoles(member.getEmail());
         member.setRoles(roles);
 
-        return memberRepository.save(member);
-    }
+        member.setCreatedAt(LocalDateTime.now());
+
+        return memberRepository.save(member);    }
 
 
     /**
@@ -68,6 +70,8 @@ public class MemberService {
         Optional.ofNullable(member.getNickname()).ifPresent(existMember::modifyNickname);
         Optional.ofNullable(member.getProfile()).ifPresent(existMember::modifyProfile);  // 현재 profile의 경우 단순 URI상태. 추후 파일로 변경 예정
         Optional.ofNullable(member.getMemberStatus()).ifPresent(existMember::modifyMemberStatus);
+
+        member.setModifiedAt(LocalDateTime.now());
 
         memberRepository.save(existMember);
     }

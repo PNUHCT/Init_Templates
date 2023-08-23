@@ -64,8 +64,7 @@ public class NaverService {
            아래와 같은 URL로 리다이렉트 되도록 유도하는 해결책 찾기
            : https://nid.naver.com/oauth2.0/authorize?client_id=avgLtiDUfWMFfHpplTZh&redirect_uri=https://developers.naver.com/proxyapi/forum/auth/oAuth2&response_type=code&state=RZ760w
          */
-
-        return url.toString();
+       return url.toString();
     }
 
     /**
