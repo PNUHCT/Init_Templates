@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import neoguri.springTemplate.oauth2.kakao.KakaoProfileVo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -48,8 +49,9 @@ public class MemberService {
         List<String> roles = customAuthorityUtils.createRoles(member.getEmail());
         member.setRoles(roles);
 
-        return memberRepository.save(member);
-    }
+        member.setCreatedAt(LocalDateTime.now());
+
+        return memberRepository.save(member);    }
 
 
     /**
@@ -68,6 +70,8 @@ public class MemberService {
         Optional.ofNullable(member.getNickname()).ifPresent(existMember::modifyNickname);
         Optional.ofNullable(member.getProfile()).ifPresent(existMember::modifyProfile);  // 현재 profile의 경우 단순 URI상태. 추후 파일로 변경 예정
         Optional.ofNullable(member.getMemberStatus()).ifPresent(existMember::modifyMemberStatus);
+
+        member.setModifiedAt(LocalDateTime.now());
 
         memberRepository.save(existMember);
     }
@@ -232,7 +236,7 @@ public class MemberService {
                     .oauthAccessToken(naverAccessToken)
                     .memberStatus(Member.MemberStatus.MEMBER_ACTIVE)
                     .build();
-            if (naverProfile.getResponse().getEmail()==null) member.modifyEmail(naverProfile.getResponse().getId()+"@uyouboodan.com"); // email 수집 미동의시, 자사 email로 가입됨
+            if (naverProfile.getResponse().getEmail()==null) member.modifyEmail(naverProfile.getResponse().getId()+"@neoguri.com"); // email 수집 미동의시, 자사 email로 가입됨
             else member.modifyEmail(naverProfile.getResponse().getEmail());
 
             member.defaultProfile();
@@ -260,7 +264,7 @@ public class MemberService {
     public Member createGoogleMember (GoogleLoginDto googleProfile, String googleAccessToken) {
         // 중복 가입 방지 로직 추가
         Optional<Member> optMember;
-        if(googleProfile.getEmail()==null) optMember = memberRepository.findByEmail(googleProfile.getSub()+"@uyouboodan.com");
+        if(googleProfile.getEmail()==null) optMember = memberRepository.findByEmail(googleProfile.getSub()+"@neoguri.com");
         else optMember = memberRepository.findByEmail(googleProfile.getEmail());
 
         if(optMember.isEmpty()) {
@@ -271,7 +275,7 @@ public class MemberService {
                     .memberStatus(Member.MemberStatus.MEMBER_ACTIVE)
                     .build();
 
-            if(googleProfile.getEmail()==null) member.modifyEmail(googleProfile.getSub()+"@uyouboodan.com");
+            if(googleProfile.getEmail()==null) member.modifyEmail(googleProfile.getSub()+"@neoguri.com");
             else member.modifyEmail(googleProfile.getEmail());
 
             if(googleProfile.getPicture()!=null) member.modifyProfile(googleProfile.getPicture());
