@@ -40,7 +40,9 @@ dependencies {
 
 	implementation group: 'com.google.code.gson', name: 'gson' // for ErrorResponder 등
 
-	runtimeOnly 'com.h2database:h2' // for h2 in-memory database
+//	runtimeOnly 'com.h2database:h2' // for h2 in-memory database // H2사용시 활성화
+	runtimeOnly 'com.mysql:mysql-connector-j' // MySQL
+
 
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0' // p6spy for  logging tracktion
 }
